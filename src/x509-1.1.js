@@ -795,11 +795,16 @@ function X509() {
 	var result = new Array();
 	var a = _getChildIdx(this.hex, info.vidx);
 	for (var i = 0; i < a.length; i++) {
-	    try {
-		var hURI = _getVbyList(this.hex, a[i], [0, 0, 0], "86");
-		var uri = hextoutf8(hURI);
-		result.push(uri);
-	    } catch(ex) {};
+	    var generalNames = _getIdxByList(this.hex, a[i], [0, 0]);
+	    var namesArray = _getChildIdx(this.hex, generalNames);
+	    for (var nameIdx = 0; nameIdx < namesArray.length; nameIdx++) {
+		var tag = this.hex.substr(namesArray[nameIdx], 2);
+		if (tag === "86") {
+		    var hURI = _getV(this.hex, namesArray[nameIdx]);
+		    var uri = hextoutf8(hURI);
+		    result.push(uri);
+		}
+	    }
 	}
 
 	return result;
